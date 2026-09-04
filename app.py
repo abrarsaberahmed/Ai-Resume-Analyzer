@@ -380,7 +380,7 @@ warnings.filterwarnings('ignore')
 
 # 1. تحميل النموذج متعدد اللغات محلياً (يدعم العربية والإنجليزي)
 model_path = 'C:/Users/hp/my_multilingual_model'
-model = SentenceTransformer(model_path)
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # 2. دالة استخراج النص من ملف الـ PDF
 def extract_text_from_pdf(pdf_path):
