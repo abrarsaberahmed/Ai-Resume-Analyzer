@@ -5,3 +5,5 @@ reportlab
 google-genai
 python-dotenv
 sentence-transformers
+torch
+torchvision
