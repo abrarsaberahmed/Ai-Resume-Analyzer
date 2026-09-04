@@ -2,3 +2,4 @@ streamlit
 pypdf
 reportlab
 google-genai
+python-dotenv
