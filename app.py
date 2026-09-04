@@ -251,23 +251,6 @@ for skill in comparison['matched']:
 print("\n❌ Missing Skills:")
 for skill in comparison['missing']:
     print(f"  • {skill}")
-
-
-# In[25]:
-
-
-get_ipython().system('pip install google-genai')
-
-
-# In[29]:
-
-
-get_ipython().system('pip install python-dotenv')
-
-
-# In[31]:
-
-
 # إنشاء الملف الخفي وتخزين المفتاح داخله مباشرة
 with open(".env", "w") as f:
     f.write('GEMINI_API_KEY="AQ.Ab8RN6IuotW3cXcc1vUYRSyDfFDGNk-2QLROq4NA26E3WKpHfw"\n')
@@ -495,16 +478,3 @@ Experience with NLP and PyTorch is required.
 
 # تشغيل التحليل التبادلي
 analyze_cv_multilingual(cv_arabic, job_english, bilingual_skills)
-
-
-# In[5]:
-
-
-get_ipython().run_cell_magic('writefile', 'app.py', 'import os\nimport re\nimport warnings\nimport streamlit as st\nimport pdfplumber\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nwarnings.filterwarnings(\'ignore\')\n\n# إعدادات الصفحة\nst.set_page_config(\n    page_title="AI Resume Analyzer",\n    page_icon="📄",\n    layout="centered"\n)\n\n# تحميل النموذج محلياً مع التخزين المؤقت (Cache) لسرعة الأداء\n@st.cache_resource\ndef load_model():\n    model_path = \'C:/Users/hp/my_multilingual_model\'\n    return SentenceTransformer(model_path)\n\nmodel = load_model()\n\n# قاموس المهارات ثنائي اللغة\nbilingual_skills = {\n    "Python": ["python", "باثون", "بايثون"],\n    "SQL": ["sql", "اس كيو ال", "قواعد بيانات"],\n    "Git": ["git", "جيت"],\n    "Machine Learning": ["machine learning", "تعلم الآلة", "التعلم الآلي"],\n    "Docker": ["docker", "دوكر"],\n    "PyTorch": ["pytorch", "باي تورش"],\n    "NLP": ["nlp", "معالجة اللغات الطبيعية", "معالجة اللغة الطبيعية"],\n    "Data Analysis": ["data analysis", "تحليل البيانات", "تحليل بيانات"]\n}\n\n# دالة استخراج النص من ملف PDF مرفوع\ndef extract_text_from_pdf_stream(uploaded_file):\n    text = ""\n    with pdfplumber.open(uploaded_file) as pdf:\n        for page in pdf.pages:\n            extracted = page.extract_text()\n            if extracted:\n                text += extracted + "\\n"\n    return text\n\n# دالة استخراج المهارات\ndef extract_bilingual_skills(text, skills_dict):\n    found_skills = set()\n    text_lower = text.lower()\n    for canonical_name, aliases in skills_dict.items():\n        for alias in aliases:\n            pattern = r\'\\b\' + re.escape(alias) + r\'\\b\'\n            if re.search(pattern, text_lower):\n                found_skills.add(canonical_name)\n                break\n    return found_skills\n\n# ----------------- واجهة المستخدم Streamlit -----------------\n\nst.title("📄 AI Resume Analyzer")\nst.write("محلل السير الذاتية الذكي — مطابقة وتحليل دلالي متعدد اللغات (عربي / إنجليزي)")\n\nst.divider()\n\n# 1. رفع ملف السيرة الذاتية\nuploaded_file = st.file_uploader("Upload your Resume (PDF)", type=["pdf"])\n\n# 2. إدخال الوصف الوظيفي\njob_description = st.text_area("Job Description", height=150, placeholder="أدخل نص الوصف الوظيفي هنا...")\n\n# 3. زر التحليل\nif st.button("🚀 Analyze Resume", use_container_width=True):\n    if uploaded_file is None:\n        st.error("⚠️ يرجى رفع ملف السيرة الذاتية بصيغة PDF أولاً.")\n    elif not job_description.strip():\n        st.error("⚠️ يرجى أدخال نص الوصف الوظيفي.")\n    else:\n        with st.spinner("جاري تحليل السيرة الذاتية والوصف الوظيفي..."):\n            # استخراج النص\n            cv_text = extract_text_from_pdf_stream(uploaded_file)\n            \n            # استخراج المهارات\n            cv_skills = extract_bilingual_skills(cv_text, bilingual_skills)\n            job_skills = extract_bilingual_skills(job_description, bilingual_skills)\n            \n            matched_skills = cv_skills.intersection(job_skills)\n            missing_skills = job_skills - cv_skills\n            \n            # المطابقة الدلالية\n            embeddings = model.encode([job_description, cv_text], show_progress_bar=False)\n            semantic_score = float(cosine_similarity([embeddings[0]], [embeddings[1]])[0][0] * 100)\n\n        # عرض النتائج\n        st.success("تم التحليل بنجاح!")\n        st.divider()\n        \n        # عرض نسبة التطابق\n        st.metric(label="📊 Resume Match Score", value=f"{semantic_score:.0f}%")\n        st.progress(int(min(max(semantic_score, 0), 100)))\n\n        col1, col2 = st.columns(2)\n\n        with col1:\n            st.subheader("✅ Matched Skills")\n            if matched_skills:\n                for skill in matched_skills:\n                    st.write(f"✓ {skill}")\n            else:\n                st.write("لا توجد مهارات متطابقة مسبقاً")\n\n        with col2:\n            st.subheader("❌ Missing Skills")\n            if missing_skills:\n                for skill in missing_skills:\n                    st.write(f"✗ {skill}")\n            else:\n                st.write("لا توجد مهارات مفقودة")\n\n        st.divider()\n\n        st.subheader("💡 AI Recommendations")\n        if missing_skills:\n            st.warning(f"• يُنصح ببتطوير وإضافة مشاريع تغطي: **{\', \'.join(missing_skills)}**")\n        st.info("• يُفضل إبراز النتائج بالأرقام والمشاريع العملية المنجزة.")\n')
-
-
-# In[ ]:
-
-
-
-
