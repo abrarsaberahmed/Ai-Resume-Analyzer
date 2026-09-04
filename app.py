@@ -27,14 +27,12 @@ print("✅ تم إنشاء هيكل المشروع بنجاح!")
 # In[9]:
 
 
-get_ipython().system('pip install pypdf')
 
 
 # In[16]:
 
 
 # 1. تثبيت مكتبة إنشاء ملفات الـ PDF (إذا لم تكن موجودة)
-get_ipython().system('pip install reportlab')
 
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
