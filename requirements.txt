@@ -1,5 +1,6 @@
 streamlit
 pypdf
+pdfplumber
 reportlab
 google-genai
 python-dotenv
