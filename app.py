@@ -353,7 +353,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # 1. تحميل النموذج من المجلد المحلي (يعمل بدون إنترنت)
-model = SentenceTransformer('C:/Users/hp/my_model')
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # 2. نص تجريبي للسيرة الذاتية ومتطلبات الوظيفة
 job_description = "Looking for a Data Scientist skilled in Python, Machine Learning, and NLP."
